@@ -3,4 +3,18 @@
 {% block body %}
   <h1>{{title}}</h1>
   <p>Welcome to {{title}}</p>
+
+  <script>
+    const ws = new WebSocket('ws://localhost:3000/echo')
+
+    ws.onopen = () => {
+        ws.send('something')
+    }
+
+    ws.onmessage = (event) => {
+        // flags.binary will be set if a binary data is received.
+        // flags.masked will be set if the data was masked.
+        console.log(event.data);
+    }
+  </script>
 {% endblock %}
