@@ -5,7 +5,7 @@
   <p>Welcome to {{title}}</p>
 
   <script>
-    const ws = new WebSocket('ws://localhost:3000/echo')
+    const ws = new WebSocket('ws://localhost:3000/ws/echo')
 
     ws.onopen = () => {
         ws.send('something')
@@ -16,5 +16,11 @@
         // flags.masked will be set if the data was masked.
         console.log(event.data);
     }
+
+    const sendPing = () => {
+        ws.send('ping');
+    }
+
+    setInterval(sendPing,1000)
   </script>
 {% endblock %}
