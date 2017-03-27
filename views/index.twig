@@ -1,0 +1,28 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+  <h1>{{title}}</h1>
+  <p>Welcome to {{title}}</p>
+
+  <script>
+    const ws = new WebSocket('ws://localhost:3000/ws/echo')
+
+    ws.onopen = () => {
+        ws.send('something')
+    }
+
+    ws.onmessage = (event) => {
+        // flags.binary will be set if a binary data is received.
+        // flags.masked will be set if the data was masked.
+        console.log(event.data);
+    }
+
+    const sendPing = () => {
+        if(ws.readyState !== ws.CLOSED){
+            ws.send('ping')
+        }
+    }
+
+    setInterval(sendPing,100)
+  </script>
+{% endblock %}
