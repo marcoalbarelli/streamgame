@@ -4,25 +4,64 @@
   <h1>{{title}}</h1>
   <p>Welcome to {{title}}</p>
 
-  <script>
-    const ws = new WebSocket('ws://localhost:3000/ws/echo')
+    <div id="bevr_demo_app" style="position: relative; overflow: hidden;height: 250px; width:198px; background-color: #aaa;">
+            {#<el-col :span="12">#}
+                {#<div id="actions" class="grid-content bg-purple-light"></div>#}
+            {#</el-col>#}
+            {#<el-col :span="12" :style="beerStyle">#}
+        <div id="beer_glass" style="position:absolute; z-index: 1;top: 0px; left: 0px; background: transparent url('/images/glass.png') no-repeat;height: 250px; width:198px; ">
 
-    ws.onopen = () => {
-        ws.send('something')
-    }
+        </div>
+        <div id="beer"  :style="beerStyle">
+        </div>
+            {#</el-col>#}
 
-    ws.onmessage = (event) => {
-        // flags.binary will be set if a binary data is received.
-        // flags.masked will be set if the data was masked.
-        console.log(event.data);
-    }
+    </div>
 
-    const sendPing = () => {
-        if(ws.readyState !== ws.CLOSED){
-            ws.send('ping')
+{% endblock %}
+
+
+{% block javascript %}
+    <script type="text/javascript" src="https://unpkg.com/vue"></script>
+    <script type="text/javascript">
+        //Vue app
+        const bevrApp = new Vue({
+            el: '#bevr_demo_app',
+            data: {
+                beerStyle: {
+                    position: 'absolute',
+                    top: '250px',
+                    left: '0px',
+                    backgroundColor: '#ff00ff',
+                    width: '198px',
+                    height: '250px',
+                    backgroundImage: `url('/images/beer.jpg')`,
+                    backgroundPosition: '0% 0%',
+                    backgroundRepeat: 'no-repeat'
+                }
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        const ws = new WebSocket('ws://localhost:3000/ws/echo')
+
+        ws.onopen = () => {
+            ws.send('something')
         }
-    }
 
-    setInterval(sendPing,100)
-  </script>
+        ws.onmessage = (event) => {
+            // flags.binary will be set if a binary data is received.
+            // flags.masked will be set if the data was masked.
+            bevrApp.beerStyle.top = `${Math.max(15, (230 - event.data/10))}px`;
+        }
+
+        //attach to the action div
+        const sendPing = () => {
+            if(ws.readyState !== ws.CLOSED){
+                ws.send('ping')
+            }
+        }
+
+        setInterval(sendPing,10)
+    </script>
 {% endblock %}
