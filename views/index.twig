@@ -4,15 +4,15 @@
   <h1>{{title}}</h1>
   <p>Welcome to {{title}}</p>
 
-    <div id="bevr_demo_app" style="position: relative; overflow: hidden;height: 250px; width:198px; background-color: #aaa;">
-            {#<el-col :span="12">#}
-                {#<div id="actions" class="grid-content bg-purple-light"></div>#}
-            {#</el-col>#}
-            {#<el-col :span="12" :style="beerStyle">#}
+    <div id="bevr_demo_app" style="position: relative; overflow: hidden;height: 250px; width:100%; background-color: #bbb;">
         <div id="beer_glass" style="position:absolute; z-index: 1;top: 0px; left: 0px; background: transparent url('/images/glass.png') no-repeat;height: 250px; width:198px; ">
 
         </div>
         <div id="beer"  :style="beerStyle">
+        </div>
+
+        <div id="pad" :style="padStyle" v-on:mousemove="padIt">
+
         </div>
             {#</el-col>#}
 
@@ -24,20 +24,34 @@
 {% block javascript %}
     <script type="text/javascript" src="https://unpkg.com/vue"></script>
     <script type="text/javascript">
+        const commonHeight = '250px'
         //Vue app
         const bevrApp = new Vue({
             el: '#bevr_demo_app',
             data: {
+                padStyle: {
+                    position: 'absolute',
+                    right: '0px',
+                    width: '400px',
+                    height: commonHeight,
+                    backgroundColor: '#444',
+                },
                 beerStyle: {
                     position: 'absolute',
                     top: '250px',
                     left: '0px',
                     backgroundColor: '#ff00ff',
                     width: '198px',
-                    height: '250px',
+                    height: commonHeight,
                     backgroundImage: `url('/images/beer.jpg')`,
                     backgroundPosition: '0% 0%',
                     backgroundRepeat: 'no-repeat'
+                }
+            },
+            methods: {
+                padIt: (arg) => {
+//                    console.log(`${arg.offsetX} - ${arg.offsetX}`)
+                    ws.send(1)
                 }
             }
         });
@@ -54,14 +68,5 @@
             // flags.masked will be set if the data was masked.
             bevrApp.beerStyle.top = `${Math.max(15, (230 - event.data/10))}px`;
         }
-
-        //attach to the action div
-        const sendPing = () => {
-            if(ws.readyState !== ws.CLOSED){
-                ws.send('ping')
-            }
-        }
-
-        setInterval(sendPing,10)
     </script>
 {% endblock %}
