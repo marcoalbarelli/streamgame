@@ -11,10 +11,13 @@
         <div id="beer"  :style="beerStyle">
         </div>
 
+
+
         <div id="pad" :style="padStyle" v-on:mousemove="padIt">
 
         </div>
-            {#</el-col>#}
+
+        <div :style="leakStyle" v-on:click="leakIt"><input type="submit" value="leakit"/> </div>
 
     </div>
 
@@ -29,6 +32,12 @@
         const bevrApp = new Vue({
             el: '#bevr_demo_app',
             data: {
+                glassHasBeenFilled: false,
+                leakStyle: {
+                    position: 'absolute',
+                    right:'50%',
+                    width: '100px'
+                },
                 padStyle: {
                     position: 'absolute',
                     right: '0px',
@@ -50,8 +59,14 @@
             },
             methods: {
                 padIt: (arg) => {
-//                    console.log(`${arg.offsetX} - ${arg.offsetX}`)
-                    ws.send(1)
+                    if(bevrApp.glassHasBeenFilled) {
+                        console.log('Been there, done that')
+                    } else {
+                        ws.send(1)
+                    }
+                },
+                leakIt: () => {
+                    ws.send('leak')
                 }
             }
         });
@@ -66,7 +81,13 @@
         ws.onmessage = (event) => {
             // flags.binary will be set if a binary data is received.
             // flags.masked will be set if the data was masked.
-            bevrApp.beerStyle.top = `${Math.max(15, (230 - event.data/10))}px`;
+            if(event.data === 'glassHasBeenFilled') {
+                bevrApp.glassHasBeenFilled = true
+                console.log('It\' been slightly easier than finishing Dark Souls III ');
+            } else {
+                //Hardcoded values will save the world
+                bevrApp.beerStyle.top = `${Math.max(15, (230 - event.data/10))}px`;
+            }
         }
     </script>
 {% endblock %}
